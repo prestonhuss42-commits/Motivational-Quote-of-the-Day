@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Daily Motivational Quote</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+    /* Animated gradient background */
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(-45deg, #667eea, #764ba2, #6b8dd6, #8358d0);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-weight: 700;
+      font-size: 3rem;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    #quote {
+      font-size: 1.8rem;
+      max-width: 700px;
+      margin: 20px auto 10px;
+      line-height: 1.5;
+      font-style: italic;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    #quote.visible {
+      opacity: 1;
+    }
+
+    #author {
+      font-size: 1.1rem;
+      margin-bottom: 40px;
+      font-weight: 600;
+      color: #d1c4e9;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    }
+
+    #countdown {
+      font-size: 1.2rem;
+      background: rgba(255,255,255,0.2);
+      padding: 12px 25px;
+      border-radius: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      user-select: none;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Countdown icon */
+    #countdown::before {
+      content: '🔥';
+      font-size: 1.4rem;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2.2rem;
+      }
+      #quote {
+        font-size: 1.3rem;
+      }
+      #countdown {
+        font-size: 1rem;
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Motivational Quote of the Day</h1>
+  <div id="quote">Loading...</div>
+  <div id="author"></div>
+  <div id="countdown">Loading countdown...</div>
+
+  <script>
+    // Add authors if you want or leave empty string
+    const quotes = [
+      { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+      { text: "Your limitation—it's only your imagination.", author: "" },
+      { text: "Push yourself, because no one else is going to do it for you.", author: "" },
+      { text: "Sometimes later becomes never. Do it now.", author: "" },
+      { text: "Great things never come from comfort zones.", author: "" },
+      { text: "Dream it. Wish it. Do it.", author: "" },
+      { text: "Stay focused and never give up.", author: "" },
+    ];
+
+    const quoteEl = document.getElementById('quote');
+    const authorEl = document.getElementById('author');
+    const countdownEl = document.getElementById('countdown');
+
+    function getQuoteIndex() {
+      const today = new Date();
+      const startDate = new Date(2025, 0, 1);
+      const diffTime = today - startDate;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays % quotes.length;
+    }
+
+    function showQuote() {
+      const index = getQuoteIndex();
+      // Fade out old quote
+      quoteEl.classList.remove('visible');
+      authorEl.classList.remove('visible');
+
+      setTimeout(() => {
+        quoteEl.textContent = `"${quotes[index].text}"`;
+        authorEl.textContent = quotes[index].author ? `— ${quotes[index].author}` : "";
+        // Fade in new quote
+        quoteEl.classList.add('visible');
+        authorEl.classList.add('visible');
+      }, 500);
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      const nextMidnight = new Date(now);
+      nextMidnight.setHours(24, 0, 0, 0);
+
+      const diff = nextMidnight - now;
+
+      if (diff <= 0) {
+        // Quote changed, update it immediately
+        showQuote();
+        return;
+      }
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      const format = (n) => n.toString().padStart(2, '0');
+
+      countdownEl.textContent = `Next quote in: ${format(hours)}:${format(minutes)}:${format(seconds)}`;
+    }
+
+    // Initial setup
+    showQuote();
+    updateCountdown();
+
+    // Update countdown every second
+    setInterval(() => {
+      updateCountdown();
+
+      // If countdown reaches 0, update the quote automatically
+      const now = new Date();
+      if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) {
+        showQuote();
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
+
